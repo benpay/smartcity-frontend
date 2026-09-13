@@ -13,8 +13,9 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
       <p className="text-gray-500">Cargando...</p>
     </div>
   );
-
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -24,7 +25,7 @@ export default function App() {
       <Route path="/sensors" element={<PrivateRoute><SensorsPage /></PrivateRoute>} />
       <Route path="/sensors/:id" element={<PrivateRoute><SensorDetailPage /></PrivateRoute>} />
       <Route path="/ingestions" element={<PrivateRoute><IngestionsPage /></PrivateRoute>} />
-      <Route path="*" element={<Navigate to="/sensors" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

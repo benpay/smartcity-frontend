@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
+import axios from 'axios';
 
 interface Sensor {
   id: string;
@@ -57,8 +58,12 @@ export default function SensorsPage() {
       resetForm();
     },
     onError: (err: unknown) => {
-      const msg = err.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Error al crear sensor');
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message;
+        setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Error al crear sensor');
+      } else {
+        setError('Error desconocido');
+      }
     },
   });
 
@@ -71,8 +76,12 @@ export default function SensorsPage() {
       resetForm();
     },
     onError: (err: unknown) => {
-      const msg = err.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Error al actualizar sensor');
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message;
+        setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Error al crear sensor');
+      } else {
+        setError('Error desconocido');
+      }
     },
   });
 
@@ -113,7 +122,7 @@ export default function SensorsPage() {
     setError('');
     const dto = form.type === 'MANUAL_UPLOAD' ? { ...form, url: undefined } : form;
     if (editingSensor) {
-      const { sensorCode, ...updateDto } = dto;
+      const { ...updateDto } = dto;
       updateMutation.mutate({ id: editingSensor.id, dto: updateDto });
     } else {
       createMutation.mutate(dto as SensorForm);
